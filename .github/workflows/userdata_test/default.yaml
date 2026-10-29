@@ -1,0 +1,60 @@
+name: Academy_UserData
+
+variables:
+  - file:
+      name: creds
+      path: data/users.csv
+      is_first_line_column_names: true
+      change_policy: each_user
+      scope: unique
+      order: sequential
+      out_of_value: cycle
+
+servers:
+  - name: myserver
+    host: tri-hc2rcc4
+    port: 8080
+    scheme: http
+
+user_paths:
+  - name: LoginWithData
+    init:
+      steps:
+        - transaction:
+            name: enter the store
+            steps:
+              - request:
+                  url: /jpetstore/shop/index.shtml
+                  server: myserver
+        - transaction:
+            name: login submit
+            steps:
+              - request:
+                  url: /jpetstore/shop/signon.shtml
+                  method: POST
+                  server: myserver
+                  headers:
+                    - Content-Type: application/x-www-form-urlencoded
+                  body: username=${creds.Username}&password=${creds.Password}&x=46&y=9
+    actions:
+      steps:
+        - transaction:
+            name: browse category
+            steps:
+              - request:
+                  url: /jpetstore/shop/viewCategory.shtml?categoryId=FISH
+                  server: myserver
+        - think_time: 2s
+
+populations:
+  - name: Population1
+    user_paths:
+      - name: LoginWithData
+
+scenarios:
+  - name: scenario1
+    populations:
+      - name: Population1
+        constant_load:
+          users: 10
+          duration: 5m
