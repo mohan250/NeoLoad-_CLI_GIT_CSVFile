@@ -18,7 +18,7 @@ on:
       data_file:
         required: true
         description: 'Full path of the users CSV on the runner PC'
-        default: 'C:\Users\CHANGE_ME\CHANGE_ME_SharePoint_Folder\users.csv'
+        default: 'C:\temp\Credentials.csv'
 
 permissions:
   contents: read
